@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<div class="container" style="max-width: 900px; margin: 0 auto; font-family: sans-serif;">
+  <h2>{{ tournament.nombre }} - Estadísticas en Vivo</h2>
+
+  <!-- SECCIÓN 1: TABLAS DE GRUPOS -->
+  <section style="margin-bottom: 40px;">
+    <h3>Tablas de Posiciones</h3>
+    {% for item in group_tables %}
+      <div style="margin-bottom: 25px;">
+        <h4 style="margin-bottom: 8px;">{{ item.group.name }}</h4>
+        <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; text-align: center; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color: #2c3e50; color: white;">
+              <th style="text-align: left; padding-left: 10px;">Equipo</th>
+              <th>PTS</th>
+              <th>PJ</th>
+              <th>PG</th>
+              <th>PE</th>
+              <th>PP</th>
+              <th>GF</th>
+              <th>GC</th>
+              <th>DG</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in item.posiciones %}
+            <tr {% if forloop.counter <= 2 %}style="background-color: #e8f8f5;"{% endif %}>
+              <td style="text-align: left; padding-left: 10px;">
+                {% if forloop.counter <= 2 %}<strong>{% endif %}
+                  {{ row.team.name }}
+                {% if forloop.counter <= 2 %}</strong>{% endif %}
+              </td>
+              <td><strong>{{ row.pts }}</strong></td>
+              <td>{{ row.pj }}</td>
+              <td>{{ row.pg }}</td>
+              <td>{{ row.pe }}</td>
+              <td>{{ row.pp }}</td>
+              <td>{{ row.gf }}</td>
+              <td>{{ row.gc }}</td>
+              <td>{{ row.dg }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endfor %}
+  </section>
+
+  <!-- SECCIÓN 2: GOLEADORES Y VALLA MENOS VENCIDA (2 COLUMNAS) -->
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    
+    <!-- TOP GOLEADORES -->
+    <section style="flex: 1; min-width: 300px;">
+      <h3>Goleadores</h3>
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background-color: #27ae60; color: white;">
+            <th>#</th>
+            <th style="text-align: left;">Jugador</th>
+            <th style="text-align: left;">Equipo</th>
+            <th>Goles</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for jugador in top_scorers %}
+          <tr>
+            <td style="text-align: center;"><strong>{{ forloop.counter }}</strong></td>
+            <td>{{ jugador.name }} (#{{ jugador.number }})</td>
+            <td><small>{{ jugador.team.name }}</small></td>
+            <td style="text-align: center;"><strong>{{ jugador.goals_scored }}</strong></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align: center;">No hay goles registrados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- VALLA MENOS VENCIDA -->
+    <section style="flex: 1; min-width: 300px;">
+      <h3>Valla Menos Vencida</h3>
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background-color: #2980b9; color: white;">
+            <th>#</th>
+            <th style="text-align: left;">Equipo / Guardameta</th>
+            <th>PJ</th>
+            <th>GC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in best_goalkeepers %}
+          <tr>
+            <td style="text-align: center;"><strong>{{ forloop.counter }}</strong></td>
+            <td>
+              <strong>{{ item.team.name }}</strong><br>
+              <small style="color: #666;">
+                {% if item.goalkeeper %}{{ item.goalkeeper.name }}{% else %}Portería General{% endif %}
+              </small>
+            </td>
+            <td style="text-align: center;">{{ item.matches_played }}</td>
+            <td style="text-align: center;"><strong>{{ item.goals_conceded }}</strong></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align: center;">No hay partidos finalizados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+</div>
+    
+</body>
+</html>
