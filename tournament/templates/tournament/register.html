@@ -1,0 +1,89 @@
+{% extends 'tournament/base.html' %}
+
+{% block title %}Registro de Delegado - Torneo{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-2 fw-bold">Registro de Delegado</h3>
+                <p class="text-center text-muted small mb-4">Crea tu usuario y selecciona el equipo que vas a administrar.</p>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2" role="alert">
+                        {% for error in form.non_field_errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Correo electrónico *</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">Nombre</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Apellido</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.team.id_for_label }}" class="form-label">Equipo asignado *</label>
+                        {{ form.team }}
+                        {% if form.team.errors %}
+                            <div class="text-danger small mt-1">{{ form.team.errors.0 }}</div>
+                        {% endif %}
+                        <div class="form-text small">Solo se muestran los equipos que aún no tienen delegado.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">Contraseña *</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirmar Contraseña *</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Registrar e Iniciar Sesión</button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <p class="text-center mb-0 small text-muted">
+                    ¿Ya tienes una cuenta? <a href="{% url 'tournament:login' %}" class="text-decoration-none">Inicia sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+
+{% extends 'tournament/base.html' %}
+
+{% block title %}Dashboard - Torneo{% endblock %}
+
+{% block content %}
 
 <div class="container" style="max-width: 900px; margin: 0 auto; font-family: sans-serif;">
-  <h2>{{ tournament.nombre }} - Estadísticas en Vivo</h2>
+  <h2>{{ tournament.name }} - Estadísticas en Vivo</h2>
 
   <!-- SECCIÓN 1: TABLAS DE GRUPOS -->
   <section style="margin-bottom: 40px;">
@@ -119,5 +117,4 @@
   </div>
 </div>
     
-</body>
-</html>
+{% endblock %}

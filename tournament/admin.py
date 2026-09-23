@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Tournament, Team, Match, GoalEvent, Player, Group, Venue
+from django.contrib.auth.admin import UserAdmin
+from .models import Tournament, Team, Match, GoalEvent, Player, Group, Venue, CustomUser
 
 
 class GoalEventInline(admin.TabularInline):
@@ -35,6 +36,32 @@ class GoalEventAdmin(admin.ModelAdmin):
     list_display = ('match', 'player', 'team', 'is_own_goal')
 
 
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    ordering = ('email',)
+    search_fields = ('email', 'first_name', 'last_name')
+    list_display = ('email',  'first_name', 'last_name', 'team', 'is_staff', 'is_active','is_team_manager')
+    
+    fieldsets = UserAdmin.fieldsets + (
+        ('Información de Torneo', {'fields': ('team',)}),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Información de Torneo', {'fields': ('team',)}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2', 'team', 'is_team_manager'),
+        }),
+    )
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Información Personal', {'fields': ('first_name', 'last_name')}),
+        ('Información de Torneo', {'fields': ('team', 'is_team_manager')}),
+        ('Permisos', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Fechas importantes', {'fields': ('last_login', 'date_joined') if hasattr(CustomUser, 'date_joined') else ('last_login',)}),
+    )
 
 
 admin.site.register(Tournament)

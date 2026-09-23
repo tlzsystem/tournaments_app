@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100)
@@ -24,10 +26,20 @@ class Team(models.Model):
         return self.name
 
 class Player(models.Model):
+    
+    position_choices = [
+        ('goalkeeper', 'Portero'),
+        ('defender', 'Defensa'),
+        ('midfielder', 'Centrocampista'),
+        ('forward', 'Delantero'),
+    ]
+
     name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     number = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
+    position = models.CharField(max_length=20, choices=position_choices)
+    is_captain = models.BooleanField(default=False)
     is_goalkeeper = models.BooleanField(default=False)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
     date_created = models.DateTimeField(auto_now_add=True)
@@ -35,6 +47,11 @@ class Player(models.Model):
 
     class Meta:
         ordering = ['team', 'number']
+        
+    def save(self, *args, **kwargs):
+        if self.position == 'goalkeeper':
+            self.is_goalkeeper = True
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} {self.last_name} # {self.number} - {self.team.name}"
@@ -119,3 +136,42 @@ class GoalEvent(models.Model):
     def __str__(self):
         return f"Goal by {self.player.name} {self.player.last_name} for {self.team.name}  in match {self.match}"
 
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('El correo electrónico es obligatorio')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True, verbose_name="Correo electrónico")
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    is_team_manager = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    
+    team = models.ForeignKey(
+        'Team', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='managers',
+        verbose_name="Equipo asignado"
+    )
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return f"{self.email} ({self.team.name if self.team else 'Sin Equipo'})"
