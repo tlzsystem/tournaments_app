@@ -8,6 +8,7 @@ class Tournament(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     active = models.BooleanField(default=True)
+    is_default = models.BooleanField(default=False, help_text="Indica si este torneo es el predeterminado para la aplicación.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -19,6 +20,7 @@ class Team(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     logo = models.ImageField(upload_to='team_logos/', blank=True, null=True)
+    shirt_color = models.CharField(max_length=20,  help_text="Color del uniforme del equipo (e.g., rojo, azul, verde)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -105,7 +107,7 @@ class Match(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.team_a.name} vs {self.team_b.name} - [{self.fase}] - {self.venue}"
+        return f"{self.team_a.name} vs {self.team_b.name} - [{self.get_fase_display()}] - {self.venue}"
 
     def update_score(self):
         self.score_team_a = self.goal_events.filter(team=self.team_a).count()
@@ -124,7 +126,10 @@ class GoalEvent(models.Model):
 
     def save(self, *args, **kwargs):
         if self.player and not self.is_own_goal and self.player.team != self.team:
-            raise ValueError("The player must belong to the team that scored the goal.")
+            raise ValueError("El jugador debe pertenecer al equipo anotador a menos que sea autogol.")
+            
+        if self.player and self.is_own_goal and self.player.team == self.team:
+            raise ValueError("Si es autogol, el equipo que suma el gol debe ser el rival del jugador.")
         super().save(*args, **kwargs)
         self.match.update_score()
 

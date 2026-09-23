@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser, Team, Player
+from .models import CustomUser, Team, Player, Match, GoalEvent
+from dal_select2.widgets import ModelSelect2
+from django.core.exceptions import ValidationError
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
@@ -71,3 +73,53 @@ class PlayerForm(forms.ModelForm):
             'number': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Dorsal'}),
             'position': forms.Select(attrs={'class': 'form-control'}),
         }
+        
+class TeamColorForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ['shirt_color']
+        widgets = {
+            'shirt_color': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Color del uniforme (e.g., rojo, azul, verde)'}),
+        }
+        
+        
+class MatchAdminForm(forms.ModelForm):
+    class Meta:
+        model = Match
+        fields = '__all__'
+        widgets = {
+            'team_a': ModelSelect2(
+                url='tournament:team-autocomplete',
+                forward=['group']  
+            ),
+            'team_b': ModelSelect2(
+                url='tournament:team-autocomplete',
+                forward=['group']
+            ),
+        }
+        
+class GoalEventForm(forms.ModelForm):
+    class Meta:
+        model = GoalEvent
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        player = cleaned_data.get('player')
+        team = cleaned_data.get('team')
+        is_own_goal = cleaned_data.get('is_own_goal', False)
+
+        if player and team:
+            # Caso 1: Gol normal pero el jugador no pertenece al equipo asignado
+            if not is_own_goal and player.team != team:
+                raise ValidationError({
+                    'player': f"El jugador {player.name} {player.last_name} pertenece a {player.team.name}, no a {team.name}."
+                })
+
+            # Caso 2: Autogol pero el equipo asignado es el mismo del jugador
+            if is_own_goal and player.team == team:
+                raise ValidationError({
+                    'team': "En un autogol, el equipo asignado para sumar el punto debe ser el rival."
+                })
+
+        return cleaned_data

@@ -1,0 +1,62 @@
+<div class="col-md-6 col-lg-4">
+    <div class="card shadow-sm border-0 h-100">
+        <!-- Encabezado de la Tarjeta: Estado y Fase/Grupo -->
+        <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+            <span class="badge 
+                {% if match.status == 'live' %}bg-danger animate__animated animate__flash{% elif match.status == 'completed' %}bg-secondary{% else %}bg-primary{% endif %}">
+                {{ match.get_status_display }}
+            </span>
+            <small class="text-muted fw-bold">
+                {% if match.fase == 'group' and match.group %}
+                    {{ match.group.name }}
+                {% else %}
+                    {{ match.get_fase_display }}
+                {% endif %}
+            </small>
+        </div>
+
+        <div class="card-body py-3">
+            <!-- Enfrentamiento de Equipos -->
+            <div class="row align-items-center text-center">
+                <!-- Equipo A -->
+                <div class="col-5">
+                    {% if match.team_a.logo %}
+                        <img src="{{ match.team_a.logo.url }}" alt="{{ match.team_a.name }}" class="img-fluid mb-1" style="max-height: 45px; object-fit: contain;">
+                    {% else %}
+                        <div class="fs-3 mb-1">🛡️</div>
+                    {% endif %}
+                    <div class="fw-bold text-truncate small" title="{{ match.team_a.name }}">{{ match.team_a.name }}</div>
+                </div>
+
+                <!-- Marcador / VS -->
+                <div class="col-2 p-0">
+                    {% if match.status == 'scheduled' %}
+                        <span class="badge bg-outline-dark text-dark border">VS</span>
+                    {% else %}
+                        <div class="fw-bold fs-4 text-nowrap">
+                            {{ match.score_team_a }} - {{ match.score_team_b }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Equipo B -->
+                <div class="col-5">
+                    {% if match.team_b.logo %}
+                        <img src="{{ match.team_b.logo.url }}" alt="{{ match.team_b.name }}" class="img-fluid mb-1" style="max-height: 45px; object-fit: contain;">
+                    {% else %}
+                        <div class="fs-3 mb-1">🛡️</div>
+                    {% endif %}
+                    <div class="fw-bold text-truncate small" title="{{ match.team_b.name }}">{{ match.team_b.name }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie de la Tarjeta: Fecha, Hora y Sede -->
+        <div class="card-footer bg-white border-top-0 pt-0 text-center text-muted small">
+            <div>📅 {{ match.date|date:"d/m/Y - H:i" }} hrs</div>
+            {% if match.venue %}
+                <div>📍 {{ match.venue.name }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

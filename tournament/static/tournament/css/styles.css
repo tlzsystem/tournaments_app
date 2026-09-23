@@ -1,0 +1,65 @@
+:root {
+    /* Paleta Morada del Equipo */
+    --brand-primary: #6A26CD;        /* Morado principal */
+    --brand-primary-hover: #551CB0;  /* Morado más oscuro para hover */
+    --brand-dark: #1E1035;           /* Morado/Negro muy oscuro para textos y encabezados */
+    --brand-accent: #A855F7;         /* Morado claro / Violeta para destacados */
+    --brand-light: #F7F4FE;          /* Fondo morado ultra claro para tarjetas o filas */
+}
+
+/* ==========================================
+   1. BOTONES
+   ========================================== */
+.btn-primary {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: var(--brand-primary-hover) !important;
+    border-color: var(--brand-primary-hover) !important;
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--brand-primary) !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================
+   2. ENCABEZADOS Y TEXTOS
+   ========================================== */
+h1, h2, h3, h4, h5, h6, .display-6 {
+    color: var(--brand-dark);
+    letter-spacing: -0.02em;
+}
+
+.text-primary {
+    color: var(--brand-primary) !important;
+}
+
+/* ==========================================
+   3. TABLAS Y BADGES (INSIGNIAS)
+   ========================================== */
+/* Encabezados de tablas en morado oscuro */
+.table-dark {
+    --bs-table-bg: #6A26CD !important;
+    --bs-table-border-color: #6A26CD;
+}
+
+/* Badges morados */
+.badge.bg-primary {
+    background-color: var(--brand-primary) !important;
+}
+
+/* Destacado de fila activa o hover */
+.table-hover tbody tr:hover {
+    background-color: var(--brand-light) !important;
+}

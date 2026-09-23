@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import Tournament, Team, Match, GoalEvent, Player, Group, Venue, CustomUser
+from .forms import MatchAdminForm, GoalEventForm
 
 
 class GoalEventInline(admin.TabularInline):
     model = GoalEvent
+    form = GoalEventForm
     extra = 1
     fields = ('player', 'team',  'is_own_goal')
     
@@ -26,9 +28,8 @@ class GoalEventInline(admin.TabularInline):
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
-    list_display = ('team_a', 'team_b', 'date', 'venue', 'score_team_a', 'score_team_b', 'status')
-    search_fields = ('team_a__name', 'team_b__name', 'venue__name')
-    list_filter = ('status', 'group', 'fase')
+    form = MatchAdminForm
+
     inlines = [GoalEventInline]
 
 @admin.register(GoalEvent)
