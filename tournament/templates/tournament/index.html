@@ -1,4 +1,3 @@
-
 {% extends 'tournament/base.html' %}
 
 {% block title %}Dashboard - Torneo{% endblock %}
@@ -12,7 +11,7 @@
   <!-- SECCIÓN 1: TABLAS DE GRUPOS -->
   <section style="margin-bottom: 40px;">
     <h4>Tablas de Posiciones</h4>
-     <br>
+    <br>
     {% for item in group_tables %}
       <div style="margin-bottom: 25px;">
         <h5 style="margin-bottom: 8px;">{{ item.group.name }}</h5>
@@ -54,9 +53,9 @@
     {% endfor %}
   </section>
 
-   <hr class="hr" />
+  <hr class="hr" />
 
-  <!-- SECCIÓN 2: GOLEADORES Y VALLA MENOS VENCIDA (2 COLUMNAS) -->
+  <!-- SECCIÓN 2: GOLEADORES Y VALLA MENOS VENCIDA -->
   <div style="display: flex; gap: 20px; flex-wrap: wrap;">
     
     <!-- TOP GOLEADORES -->
@@ -117,287 +116,264 @@
         </tbody>
       </table>
     </section>
-     <hr class="hr" />
-    <section>
-    <div class="container my-4">
-            <div class="text-center mb-5">
-                <h1 class="fw-bold display-6">Calendario y Resultados del Torneo</h1>
-                <p class="text-muted">Programación de partidos ordenada por fecha y separada por fases.</p>
-            </div>
-
-            <!-- TABLA 1: FASE DE GRUPOS -->
-            <div class="mb-5">
-                <h3 class="fw-bold text-primary mb-3">⚽ Fase de Grupos</h3>
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-0">
-                        {% if group_matches %}
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th style="width: 15%;" class="ps-3">Fecha / Hora</th>
-                                            <th style="width: 15%;" class="text-center">Grupo</th>
-                                            <th style="width: 26%;" class="text-end">Local</th>
-                                            <th style="width: 12%;" class="text-center">Resultado</th>
-                                            <th style="width: 26%;" class="text-start">Visitante</th>
-                                            <th style="width: 6%;" class="text-center pe-3">Sede</th>
-                                            <th style="width: 6%;" class="text-center pe-3">Estado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for match in group_matches %}
-                                            <tr>
-                                                <!-- Fecha y Hora -->
-                                                <td class="ps-3">
-                                                    <div class="fw-bold text-dark">{{ match.date|date:"d/m/Y" }}</div>
-                                                    <small class="text-muted">🕒 {{ match.date|date:"H:i" }} hrs</small>
-                                                </td>
-
-                                                <!-- Grupo -->
-                                                <td class="text-center">
-                                                    {% if match.group %}
-                                                        <span class="badge bg-primary">{{ match.group.name }}</span>
-                                                    {% else %}
-                                                        <span class="badge bg-secondary">-</span>
-                                                    {% endif %}
-                                                </td>
-
-                                                <!-- Equipo Local -->
-                                                <td class="text-end fw-semibold fs-6">
-                                                    <span class="me-2">{{ match.team_a.name }}</span>
-                                                    {% if match.team_a.logo %}
-                                                        <img src="{{ match.team_a.logo.url }}" alt="{{ match.team_a.name }}" style="height: 28px; width: 28px; object-fit: contain;">
-                                                    {% else %}
-                                                        <span class="small">🛡️</span>
-                                                    {% endif %}
-                                                </td>
-
-                                                <!-- Marcador / Estado -->
-                                                <td class="text-center">
-                                                    {% if match.status == 'scheduled' %}
-                                                        <span class="badge bg-light text-dark border">VS</span>
-                                                    {% else %}
-                                                        <span class="badge bg-dark fs-6 px-3 py-1">
-                                                            {{ match.score_team_a }} - {{ match.score_team_b }}
-                                                        </span>
-                                                        {% if match.status == 'live' %}
-                                                            <div class="badge bg-danger small mt-1">EN VIVO</div>
-                                                        {% endif %}
-                                                    {% endif %}
-                                                </td>
-
-                                                <!-- Equipo Visitante -->
-                                                <td class="text-start fw-semibold fs-6">
-                                                    {% if match.team_b.logo %}
-                                                        <img src="{{ match.team_b.logo.url }}" alt="{{ match.team_b.name }}" style="height: 28px; width: 28px; object-fit: contain;" class="me-2">
-                                                    {% else %}
-                                                        <span class="small me-2">🛡️</span>
-                                                    {% endif %}
-                                                    <span>{{ match.team_b.name }}</span>
-                                                </td>
-
-                                                <!-- Sede -->
-                                                <td class="text-center pe-3 small text-muted">
-                                                    {% if match.venue %}
-                                                        <span title="{{ match.venue.address }}">{{ match.venue.name }}</span>
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if match.status == 'scheduled' %}
-                                                        <span class="badge bg-outline-dark text-dark border">Programado</span>
-                                                    {% elif match.status == 'live' %}
-                                                        <span class="badge bg-danger">En Vivo</span>
-                                                    {% elif match.status == 'completed' %}
-                                                        <span class="badge bg-secondary">Finalizado</span>
-                                                    {% else %}
-                                                        <span class="badge bg-light text-dark border">Desconocido</span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4 text-muted">
-                                No hay partidos programados para la Fase de Grupos.
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- TABLA 2: SEMIFINALES -->
-            <div class="mb-5">
-                <h3 class="fw-bold text-primary mb-3">🔥 Semifinales</h3>
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-0">
-                        {% if semifinal_matches %}
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th style="width: 15%;" class="ps-3">Fecha / Hora</th>
-                                            <th style="width: 15%;" class="text-center">Fase</th>
-                                            <th style="width: 26%;" class="text-end">Local</th>
-                                            <th style="width: 12%;" class="text-center">Resultado</th>
-                                            <th style="width: 26%;" class="text-start">Visitante</th>
-                                            <th style="width: 6%;" class="text-center pe-3">Sede</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for match in semifinal_matches %}
-                                            <tr>
-                                                <td class="ps-3">
-                                                    <div class="fw-bold text-dark">{{ match.date|date:"d/m/Y" }}</div>
-                                                    <small class="text-muted">🕒 {{ match.date|date:"H:i" }} hrs</small>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge bg-warning text-dark">Semifinal</span>
-                                                </td>
-
-                                                <td class="text-end fw-semibold fs-6">
-                                                    <span class="me-2">{{ match.team_a.name }}</span>
-                                                    {% if match.team_a.logo %}
-                                                        <img src="{{ match.team_a.logo.url }}" alt="{{ match.team_a.name }}" style="height: 28px; width: 28px; object-fit: contain;">
-                                                    {% else %}
-                                                        <span class="small">🛡️</span>
-                                                    {% endif %}
-                                                </td>
-
-                                                <td class="text-center">
-                                                    {% if match.status == 'scheduled' %}
-                                                        <span class="badge bg-light text-dark border">VS</span>
-                                                    {% else %}
-                                                        <span class="badge bg-dark fs-6 px-3 py-1">
-                                                            {{ match.score_team_a }} - {{ match.score_team_b }}
-                                                        </span>
-                                                        {% if match.status == 'live' %}
-                                                            <div class="badge bg-danger small mt-1">EN VIVO</div>
-                                                        {% endif %}
-                                                    {% endif %}
-                                                </td>
-
-                                                <td class="text-start fw-semibold fs-6">
-                                                    {% if match.team_b.logo %}
-                                                        <img src="{{ match.team_b.logo.url }}" alt="{{ match.team_b.name }}" style="height: 28px; width: 28px; object-fit: contain;" class="me-2">
-                                                    {% else %}
-                                                        <span class="small me-2">🛡️</span>
-                                                    {% endif %}
-                                                    <span>{{ match.team_b.name }}</span>
-                                                </td>
-
-                                                <td class="text-center pe-3 small text-muted">
-                                                    {% if match.venue %}
-                                                        <span title="{{ match.venue.address }}">{{ match.venue.name }}</span>
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4 text-muted">
-                                Aún no se han definido los partidos de Semifinales.
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- TABLA 3: GRAN FINAL -->
-            <div class="mb-5">
-                <h3 class="fw-bold text-primary mb-3">🏆 Gran Final</h3>
-                <div class="card shadow-sm border-2 border-warning">
-                    <div class="card-body p-0">
-                        {% if final_matches %}
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th style="width: 15%;" class="ps-3">Fecha / Hora</th>
-                                            <th style="width: 15%;" class="text-center">Fase</th>
-                                            <th style="width: 26%;" class="text-end">Local</th>
-                                            <th style="width: 12%;" class="text-center">Resultado</th>
-                                            <th style="width: 26%;" class="text-start">Visitante</th>
-                                            <th style="width: 6%;" class="text-center pe-3">Sede</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for match in final_matches %}
-                                            <tr class="bg-light">
-                                                <td class="ps-3">
-                                                    <div class="fw-bold text-dark">{{ match.date|date:"d/m/Y" }}</div>
-                                                    <small class="text-muted">🕒 {{ match.date|date:"H:i" }} hrs</small>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge bg-danger">Final</span>
-                                                </td>
-
-                                                <td class="text-end fw-bold fs-6 text-primary">
-                                                    <span class="me-2">{{ match.team_a.name }}</span>
-                                                    {% if match.team_a.logo %}
-                                                        <img src="{{ match.team_a.logo.url }}" alt="{{ match.team_a.name }}" style="height: 28px; width: 28px; object-fit: contain;">
-                                                    {% else %}
-                                                        <span class="small">🛡️</span>
-                                                    {% endif %}
-                                                </td>
-
-                                                <td class="text-center">
-                                                    {% if match.status == 'scheduled' %}
-                                                        <span class="badge bg-light text-dark border">VS</span>
-                                                    {% else %}
-                                                        <span class="badge bg-warning text-dark fs-6 px-3 py-1">
-                                                            {{ match.score_team_a }} - {{ match.score_team_b }}
-                                                        </span>
-                                                        {% if match.status == 'live' %}
-                                                            <div class="badge bg-danger small mt-1">EN VIVO</div>
-                                                        {% endif %}
-                                                    {% endif %}
-                                                </td>
-
-                                                <td class="text-start fw-bold fs-6 text-primary">
-                                                    {% if match.team_b.logo %}
-                                                        <img src="{{ match.team_b.logo.url }}" alt="{{ match.team_b.name }}" style="height: 28px; width: 28px; object-fit: contain;" class="me-2">
-                                                    {% else %}
-                                                        <span class="small me-2">🛡️</span>
-                                                    {% endif %}
-                                                    <span>{{ match.team_b.name }}</span>
-                                                </td>
-
-                                                <td class="text-center pe-3 small text-muted">
-                                                    {% if match.venue %}
-                                                        <span title="{{ match.venue.address }}">{{ match.venue.name }}</span>
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4 text-muted">
-                                Aún no se ha definido la Gran Final.
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </section>
-
   </div>
+
+  <hr class="hr" />
+
+  <!-- SECCIÓN 3: CALENDARIO Y RESULTADOS -->
+  <section class="my-4">
+    <div class="text-center mb-5">
+      <h1 class="fw-bold display-6">Calendario y Resultados del Torneo</h1>
+      <p class="text-muted">Programación de partidos ordenada por fecha y separada por fases.</p>
+    </div>
+
+    <!-- TABLA 1: FASE DE GRUPOS -->
+    <div class="mb-5">
+      <h3 class="fw-bold text-primary mb-3">⚽ Fase de Grupos</h3>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+          {% if group_matches %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th style="width: 15%;" class="ps-3">Fecha / Hora</th>
+                    <th style="width: 15%;" class="text-center">Grupo</th>
+                    <th style="width: 26%;" class="text-end">Local</th>
+                    <th style="width: 12%;" class="text-center">Resultado</th>
+                    <th style="width: 26%;" class="text-start">Visitante</th>
+                    <th style="width: 6%;" class="text-center pe-3">Sede</th>
+                    <th style="width: 6%;" class="text-center pe-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for match in group_matches %}
+                    <tr>
+                      <td class="ps-3">
+                        <div class="fw-bold text-dark">{{ match.date|date:"d/m/Y" }}</div>
+                        <small class="text-muted">🕒 {{ match.date|date:"H:i" }} hrs</small>
+                      </td>
+                      <td class="text-center">
+                        {% if match.group %}
+                          <span class="badge bg-primary">{{ match.group.name }}</span>
+                        {% else %}
+                          <span class="badge bg-secondary">-</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-end fw-semibold fs-6">
+                        <span class="me-2">{{ match.team_a.name }}</span>
+                        {% if match.team_a.logo %}
+                          <img src="{{ match.team_a.logo.url }}" alt="{{ match.team_a.name }}" style="height: 28px; width: 28px; object-fit: contain;">
+                        {% else %}
+                          <span class="small">🛡️</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-center">
+                        {% if match.status == 'scheduled' %}
+                          <span class="badge bg-light text-dark border">VS</span>
+                        {% else %}
+                          <span class="badge bg-dark fs-6 px-3 py-1">
+                            {{ match.score_team_a }} - {{ match.score_team_b }}
+                          </span>
+                          {% if match.status == 'live' %}
+                            <div class="badge bg-danger small mt-1">EN VIVO</div>
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                      <td class="text-start fw-semibold fs-6">
+                        {% if match.team_b.logo %}
+                          <img src="{{ match.team_b.logo.url }}" alt="{{ match.team_b.name }}" style="height: 28px; width: 28px; object-fit: contain;" class="me-2">
+                        {% else %}
+                          <span class="small me-2">🛡️</span>
+                        {% endif %}
+                        <span>{{ match.team_b.name }}</span>
+                      </td>
+                      <td class="text-center pe-3 small text-muted">
+                        {% if match.venue %}
+                          <span title="{{ match.venue.address }}">{{ match.venue.name }}</span>
+                        {% else %}
+                          -
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if match.status == 'scheduled' %}
+                          <span class="badge bg-outline-dark text-dark border">Programado</span>
+                        {% elif match.status == 'live' %}
+                          <span class="badge bg-danger">En Vivo</span>
+                        {% elif match.status == 'completed' %}
+                          <span class="badge bg-secondary">Finalizado</span>
+                        {% else %}
+                          <span class="badge bg-light text-dark border">Desconocido</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-center py-4 text-muted">
+              No hay partidos programados para la Fase de Grupos.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA 2: SEMIFINALES -->
+    <div class="mb-5">
+      <h3 class="fw-bold text-primary mb-3">🔥 Semifinales</h3>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+          {% if semifinal_matches %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th style="width: 15%;" class="ps-3">Fecha / Hora</th>
+                    <th style="width: 15%;" class="text-center">Fase</th>
+                    <th style="width: 26%;" class="text-end">Local</th>
+                    <th style="width: 12%;" class="text-center">Resultado</th>
+                    <th style="width: 26%;" class="text-start">Visitante</th>
+                    <th style="width: 6%;" class="text-center pe-3">Sede</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for match in semifinal_matches %}
+                    <tr>
+                      <td class="ps-3">
+                        <div class="fw-bold text-dark">{{ match.date|date:"d/m/Y" }}</div>
+                        <small class="text-muted">🕒 {{ match.date|date:"H:i" }} hrs</small>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge bg-warning text-dark">Semifinal</span>
+                      </td>
+                      <td class="text-end fw-semibold fs-6">
+                        <span class="me-2">{{ match.team_a.name }}</span>
+                        {% if match.team_a.logo %}
+                          <img src="{{ match.team_a.logo.url }}" alt="{{ match.team_a.name }}" style="height: 28px; width: 28px; object-fit: contain;">
+                        {% else %}
+                          <span class="small">🛡️</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-center">
+                        {% if match.status == 'scheduled' %}
+                          <span class="badge bg-light text-dark border">VS</span>
+                        {% else %}
+                          <span class="badge bg-dark fs-6 px-3 py-1">
+                            {{ match.score_team_a }} - {{ match.score_team_b }}
+                          </span>
+                          {% if match.status == 'live' %}
+                            <div class="badge bg-danger small mt-1">EN VIVO</div>
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                      <td class="text-start fw-semibold fs-6">
+                        {% if match.team_b.logo %}
+                          <img src="{{ match.team_b.logo.url }}" alt="{{ match.team_b.name }}" style="height: 28px; width: 28px; object-fit: contain;" class="me-2">
+                        {% else %}
+                          <span class="small me-2">🛡️</span>
+                        {% endif %}
+                        <span>{{ match.team_b.name }}</span>
+                      </td>
+                      <td class="text-center pe-3 small text-muted">
+                        {% if match.venue %}
+                          <span title="{{ match.venue.address }}">{{ match.venue.name }}</span>
+                        {% else %}
+                          -
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-center py-4 text-muted">
+              Aún no se han definido los partidos de Semifinales.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA 3: GRAN FINAL -->
+    <div class="mb-5">
+      <h3 class="fw-bold text-primary mb-3">🏆 Gran Final</h3>
+      <div class="card shadow-sm border-2 border-warning">
+        <div class="card-body p-0">
+          {% if final_matches %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th style="width: 15%;" class="ps-3">Fecha / Hora</th>
+                    <th style="width: 15%;" class="text-center">Fase</th>
+                    <th style="width: 26%;" class="text-end">Local</th>
+                    <th style="width: 12%;" class="text-center">Resultado</th>
+                    <th style="width: 26%;" class="text-start">Visitante</th>
+                    <th style="width: 6%;" class="text-center pe-3">Sede</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for match in final_matches %}
+                    <tr class="bg-light">
+                      <td class="ps-3">
+                        <div class="fw-bold text-dark">{{ match.date|date:"d/m/Y" }}</div>
+                        <small class="text-muted">🕒 {{ match.date|date:"H:i" }} hrs</small>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge bg-danger">Final</span>
+                      </td>
+                      <td class="text-end fw-bold fs-6 text-primary">
+                        <span class="me-2">{{ match.team_a.name }}</span>
+                        {% if match.team_a.logo %}
+                          <img src="{{ match.team_a.logo.url }}" alt="{{ match.team_a.name }}" style="height: 28px; width: 28px; object-fit: contain;">
+                        {% else %}
+                          <span class="small">🛡️</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-center">
+                        {% if match.status == 'scheduled' %}
+                          <span class="badge bg-light text-dark border">VS</span>
+                        {% else %}
+                          <span class="badge bg-warning text-dark fs-6 px-3 py-1">
+                            {{ match.score_team_a }} - {{ match.score_team_b }}
+                          </span>
+                          {% if match.status == 'live' %}
+                            <div class="badge bg-danger small mt-1">EN VIVO</div>
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                      <td class="text-start fw-bold fs-6 text-primary">
+                        {% if match.team_b.logo %}
+                          <img src="{{ match.team_b.logo.url }}" alt="{{ match.team_b.name }}" style="height: 28px; width: 28px; object-fit: contain;" class="me-2">
+                        {% else %}
+                          <span class="small me-2">🛡️</span>
+                        {% endif %}
+                        <span>{{ match.team_b.name }}</span>
+                      </td>
+                      <td class="text-center pe-3 small text-muted">
+                        {% if match.venue %}
+                          <span title="{{ match.venue.address }}">{{ match.venue.name }}</span>
+                        {% else %}
+                          -
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-center py-4 text-muted">
+              Aún no se han definido los partidos de la Final.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
-    
+
 {% endblock %}

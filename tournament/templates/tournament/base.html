@@ -9,9 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'tournament/css/styles.css' %}">
 </head>
-<body class="bg-light d-flex flex-column min-vh-100">
+<body class="bg-light d-flex flex-column min-vh-100 overflow-x-hidden">
 
-        <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
+        <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top w-100">
             <div class="container">
                 <!-- Marca / Logo principal -->
                 <a class="navbar-brand fw-bold text-dark fs-4" href="{% url 'tournament:tournament_index' %}">
@@ -77,13 +77,13 @@
             </nav>
     
 
-    <main class="container py-4 flex-grow-1">
+    <main class="container py-4 flex-grow-1 w-100">
         {% block content %}
         {% endblock %}
     </main>
-    <footer class="bg-dark text-light py-3 mt-auto">
+    <footer class="bg-dark text-light py-3 mt-auto w-100">
         <div class="container text-center">
-            &copy; {{ current_year }} Voy A Cambiar. Todos los derechos reservados.  Desarrollado por <a href="https://samueltoloza.cl>" class="text-light text-decoration-none">Samuel Toloza</a>.
+            &copy; {{ current_year }} Voy A Cambiar. Todos los derechos reservados.  Desarrollado por <a href="https://samueltoloza.cl" class="text-light text-decoration-none">Samuel Toloza</a>.
         </div>
     </footer>
 

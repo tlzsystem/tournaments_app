@@ -64,6 +64,14 @@ class TeamLogoForm(forms.ModelForm):
         }
 
 class PlayerForm(forms.ModelForm):
+    position = forms.ChoiceField(
+        choices=[
+            ('', ' - Selecciona una posición - ' ),
+            *Player.position_choices,
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+
     class Meta:
         model = Player
         fields = ['name', 'last_name', 'number', 'position', 'is_captain']
@@ -71,7 +79,6 @@ class PlayerForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido'}),
             'number': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Dorsal'}),
-            'position': forms.Select(attrs={'class': 'form-control'}),
         }
         
 class TeamColorForm(forms.ModelForm):

@@ -6,9 +6,9 @@
 <div class="row mb-4 align-items-center">
     <div class="col-md-8">
         <h2 class="fw-bold mb-1">Panel de Control: {{ team.name }}</h2>
-        <p class="text-muted">Gestión de plantilla y escudo del equipo</p>
+        <p class="text-muted mb-0">Gestión de plantilla y escudo del equipo</p>
     </div>
-    <div class="col-md-4 text-md-end">
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
         <a href="{% url 'tournament:add_player' %}" class="btn btn-success fw-bold">
             ➕ Agregar Jugador
         </a>
@@ -19,73 +19,129 @@
     {% for message in messages %}
         <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
             {{ message }}
-            <button type="type" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
 {% endif %}
 
 <div class="row g-4">
-    <!-- Columna Izquierda: Escudo / Logo del Equipo -->
-    <div class="col-lg-4">
-        <div class="card shadow-sm border-0 text-center p-3">
-            <h5 class="card-title fw-bold mb-3">Escudo del Equipo</h5>
-            <div class="mb-3 d-flex justify-content-center align-items-center bg-white rounded border p-3" style="min-height: 180px;">
-                {% if team.logo %}
-                    <img src="{{ team.logo.url }}" alt="Logo {{ team.name }}" class="img-fluid rounded" style="max-height: 160px; object-fit: contain;">
-                {% else %}
-                    <div class="text-muted small">
-                        <span style="font-size: 3rem;">🛡️</span><br>
-                        Sin escudo asignado
+    <!-- Columna Izquierda: Escudo y Color -->
+    <div class="col-lg-4 d-flex flex-column gap-4">
+        
+        <!-- Tarjeta 1: Escudo del Equipo -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <h5 class="card-title fw-bold mb-3">Escudo del Equipo</h5>
+                    
+                    <!-- Previsualización -->
+                    <div class="mb-3 d-flex justify-content-center align-items-center bg-light rounded border p-3 position-relative" style="min-height: 180px;">
+                        {% if team.logo %}
+                            <img src="{{ team.logo.url }}" alt="Logo {{ team.name }}" class="img-fluid rounded shadow-sm" style="max-height: 140px; object-fit: contain;">
+                        {% else %}
+                            <div class="text-muted small">
+                                <span class="d-block mb-1" style="font-size: 3rem;">🛡️</span>
+                                Sin escudo asignado
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
+
+                    {% if team.logo %}
+                        <!-- Botón para eliminar escudo actual -->
+                        <div class="mb-3 text-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm w-100" data-bs-toggle="modal" data-bs-target="#deleteLogoModal">
+                                🗑️ Eliminar Escudo Actual
+                            </button>
+                        </div>
+
+                        <!-- Modal de confirmación para eliminar escudo -->
+                        <div class="modal fade text-start" id="deleteLogoModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title fw-bold">¿Eliminar Escudo?</h6>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body small">
+                                        El equipo se quedará sin imagen de perfil hasta que subas una nueva.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" name="delete_logo" class="btn btn-danger btn-sm">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Formulario para subir/actualizar -->
+                    <form method="post" enctype="multipart/form-data" class="text-start" id="logoForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ logo_form.logo.id_for_label }}" class="form-label small fw-bold">
+                                {% if team.logo %}Cambiar escudo{% else %}Subir escudo{% endif %}
+                            </label>
+                            <input type="file" 
+                                name="{{ logo_form.logo.name }}" 
+                                id="{{ logo_form.logo.id_for_label }}" 
+                                class="form-control form-control-sm" 
+                                accept="image/*" 
+                                required>
+                        </div>
+                        <button type="submit" name="update_logo" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                            {% if team.logo %}Actualizar Logo{% else %}Subir Logo{% endif %}
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <!-- Formulario modal/directo para cambiar logo -->
-            <form method="post" enctype="multipart/form-data" class="text-start">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="{{ logo_form.logo.id_for_label }}" class="form-label small fw-bold">Cambiar imagen de logo</label>
-                    {{ logo_form.logo }}
-                </div>
-                <button type="submit" name="update_logo" class="btn btn-outline-primary btn-sm w-100">
-                    Actualizar Logo
-                </button>
-            </form>
+        <!-- Tarjeta 2: Color del Uniforme -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 text-center">
+                <h5 class="card-title fw-bold mb-2">Color del Uniforme</h5>
+                <p class="fs-5 text-primary fw-bold mb-3">{{ team.shirt_color|title|default:"Sin definir" }}</p>
+
+                <form method="post" class="text-start">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ color_form.shirt_color.id_for_label }}" class="form-label small fw-bold">Actualizar color del uniforme</label>
+                        <input type="text" 
+                               name="{{ color_form.shirt_color.name }}" 
+                               id="{{ color_form.shirt_color.id_for_label }}"
+                               value="{{ color_form.shirt_color.value|default_if_none:'' }}" 
+                               class="form-control form-control-sm" 
+                               placeholder="Ej: Rojo, Azul, Verde"
+                               required>
+                    </div>
+                    <button type="submit" name="update_color" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                        Actualizar Color
+                    </button>
+                </form>
+            </div>
         </div>
-        <div class="card shadow-sm border-0 text-center p-3">
-            <h5 class="card-title fw-bold mb-3">Color del Uniforme</h5>
-            
-            <p class="lead">{{ team.shirt_color|title|default:"Sin definir" }}</p>
-            <form method="post" class="text-start">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="{{ color_form.shirt_color.id_for_label }}" class="form-label small fw-bold">Actualizar color del uniforme</label>
-                   <input type="text" name="{{ color_form.shirt_color.name }}" value="{{ color_form.shirt_color.value|default_if_none:'' }}" class="form-control" placeholder="Color del uniforme (e.g., rojo, azul, verde)">
-                </div>
-                <button type="submit" name="update_color" class="btn btn-outline-primary btn-sm w-100">
-                    Actualizar Color
-                </button>
-        </div>
+
     </div>
 
     <!-- Columna Derecha: Lista de Jugadores -->
     <div class="col-lg-8">
         <div class="card shadow-sm border-0">
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title fw-bold mb-0">Plantilla de Jugadores ({{ players.count }})</h5>
                 </div>
 
                 {% if players %}
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th scope="col" class="text-center" style="width: 60px;">#</th>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Posición</th>
                                     <th scope="col" class="text-center">Capitán</th>
-                                    <th scope="col" class="text-end" style="width: 140px;">Acciones</th>
+                                    <th scope="col" class="text-end" style="width: 120px;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -113,7 +169,7 @@
                                                 </button>
                                             </div>
 
-                                            <!-- Modal de Confirmación para Borrar -->
+                                            <!-- Modal de Confirmación -->
                                             <div class="modal fade text-start" id="deleteModal{{ player.id }}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
@@ -122,13 +178,13 @@
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            ¿Estás seguro de que deseas eliminar a <strong>{{ player.first_name }} {{ player.last_name }}</strong> del equipo?
+                                                            ¿Estás seguro de que deseas eliminar a <strong>{{ player.name }} {{ player.last_name }}</strong> del equipo?
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
                                                             <form action="{% url 'tournament:delete_player' player.id %}" method="post" class="d-inline">
                                                                 {% csrf_token %}
-                                                                <button type="submit" class="btn btn-danger">Eliminar Jugador</button>
+                                                                <button type="submit" class="btn btn-danger btn-sm">Eliminar Jugador</button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -151,4 +207,15 @@
         </div>
     </div>
 </div>
+
+<script>
+// Validaciones JS básicas de Bootstrap para que se marque el input si no se seleccionó archivo
+document.getElementById('logoForm').addEventListener('submit', function (event) {
+    if (!this.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    this.classList.add('was-validated');
+}, false);
+</script>
 {% endblock %}

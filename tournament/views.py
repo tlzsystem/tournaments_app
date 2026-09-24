@@ -176,10 +176,19 @@ def manager_dashboard(request):
 
     if request.method == 'POST' and 'update_logo' in request.POST:
         logo_form = TeamLogoForm(request.POST, request.FILES, instance=team)
-        if logo_form.is_valid():
+        if 'logo' in request.FILES and logo_form.is_valid():
             logo_form.save()
             messages.success(request, "Logo del equipo actualizado con éxito.")
             return redirect('tournament:manager_dashboard')
+        else:
+            messages.error(request, "Debes seleccionar un archivo de imagen válido.")
+    elif request.method == 'POST' and 'delete_logo' in request.POST:
+        if team.logo:
+            team.logo.delete(save=False)  
+            team.logo = None              
+            team.save()
+            messages.success(request, "El escudo ha sido eliminado.")
+        return redirect('tournament:manager_dashboard')
         
     elif request.method == 'POST' and 'update_color' in request.POST:
         color_form = TeamColorForm(request.POST, instance=team)
@@ -220,7 +229,7 @@ def add_player(request):
 @team_manager_required
 def edit_player(request, player_id):
     team = request.user.team
-    player = get_object_or_404(Player, id=player_id, team=team)  # Garantiza que el jugador pertenezca a su equipo
+    player = get_object_or_404(Player, id=player_id, team=team) 
 
     if request.method == 'POST':
         form = PlayerForm(request.POST, instance=player)
